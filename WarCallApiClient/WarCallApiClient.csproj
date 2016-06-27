@@ -56,8 +56,10 @@
     <Compile Include="Forms\ClientForm.Designer.cs">
       <DependentUpon>ClientForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Models\Fleet.cs" />
     <Compile Include="Models\Ins2000Reference.cs" />
     <Compile Include="Models\Insurance.cs" />
+    <Compile Include="Models\InsuranceHandler.cs" />
     <Compile Include="Models\InterestCode.cs" />
     <Compile Include="Models\WebAccount.cs" />
     <Compile Include="Program.cs" />

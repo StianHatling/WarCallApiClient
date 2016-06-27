@@ -17,6 +17,7 @@ namespace WarCallApiClient.Models
         public double Share { get; private set; }
         public InterestCode InterestCode { get; private set; }
         public WebObject InsuranceObject { get; private set; }
+        public Fleet InsuranceFleet { get; private set; }
         public DateTime FromDate { get; private set; }
         public DateTime ToDate { get; private set; }
         public WebAccount Client { get; private set; }
@@ -31,7 +32,7 @@ namespace WarCallApiClient.Models
         public string ErrorMessage { get; private set; }
 
         public Insurance(int? id, string externalReference, int insuranceYear, string currency, double value, double rate, double share, InterestCode interestCode, WebObject insuranceObject,
-                        DateTime fromDate, DateTime toDate, WebAccount client, WebAccount insured, string alterationText, string alterationDescription, string autoClose,
+                        Fleet insuranceFleet, DateTime fromDate, DateTime toDate, WebAccount client, WebAccount insured, string alterationText, string alterationDescription, string autoClose,
                         Ins2000Reference ins2000Reference, int? status, string lastModifiedByUser, int? batchID, string errorMessage)
         {
             ID = id;
@@ -43,6 +44,7 @@ namespace WarCallApiClient.Models
             Share = share;
             InterestCode = interestCode;
             InsuranceObject = insuranceObject;
+            InsuranceFleet = insuranceFleet;
             FromDate = fromDate;
             ToDate = toDate;
             Client = client;
@@ -67,7 +69,8 @@ namespace WarCallApiClient.Models
             double share = 100d;
             double rate = 0.750d;
             InterestCode interestCode = new InterestCode(501, "WarCall");
-            WebObject obj = new WebObject(null, 63479, "ZEALOT", "FARSTAD SHIPPING ASA", "FFS", null);
+            WebObject obj = new WebObject(null, 63479, "ZEALOT", "FFS", null);
+            Fleet fleet = new Fleet(null, "FARSTAD SHIPPING ASA", 2016, "ITS");
             DateTime fromDate = new DateTime(2016, 01, 01);
             DateTime toDate = new DateTime(2016, 6, 15);
             WebAccount client = new WebAccount(2404562, "FARSTAD SHIPPING ASA", "NOR");
@@ -82,7 +85,7 @@ namespace WarCallApiClient.Models
             string errorMsg = "";
 
             Insurance ins = new Insurance(id, externalReference, insuranceYear, currency, value, rate, share, interestCode,
-                                           obj, fromDate, toDate, client, insured, alterationText, alterationDescription,
+                                           obj, fleet, fromDate, toDate, client, insured, alterationText, alterationDescription,
                                            autoClose, ins2000Reference, status, lastModifiedByUser, batchID, errorMsg);
             return ins;
         }

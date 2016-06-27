@@ -33,6 +33,7 @@ namespace WarCallApiClient
         {
             var data = Encoding.UTF8.GetBytes(body);
             var request = (HttpWebRequest)WebRequest.Create(http);
+            //request.
             request.Method = "POST";
             request.ContentType = "application/json";
             request.ContentLength = data.Length;
@@ -48,10 +49,17 @@ namespace WarCallApiClient
                 stream.Write(data, 0, data.Length);
             }
 
-            var response = request.GetResponse();
+            try
+            {
+                var response = request.GetResponse();
 
-            var responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
-            return responseString;
+                var responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
+                return responseString;
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
         }
 
 
@@ -63,24 +71,24 @@ namespace WarCallApiClient
 
             string clientId = "CN4LzJigtNdjvRJGYlP6tCcTA0ahSg8P";
             string grantType = "urn:ietf:params:oauth:grant-type:jwt-bearer";
-            string refreshtoken = "DPjKgarJRwjQ55gOj5gE8d3SWAR96CEbCUx9bJGL9ukHt";
+            string refreshtoken = "YSEo0NbzuHQklmlwoObppDqvndarzwlG0nmR5G8cRheDY";
             string scope = "openid profile offline_access";
             string apiType = "INS2000";
 
             string body = GetJwtBody(clientId, grantType, refreshtoken, scope, apiType);
 
             var response = RunPost(http, body, "");
-            var array = response.Split(new Char[] { '{', ',' });
+            var array = response.Split(new Char[] { '{', ',', '}' });
 
             foreach (var s in array)
             {
                 if (s.Contains("id_token"))
                 {
-                    var subArray = s.Split(new Char[] { '.' });
-                    return subArray[subArray.Length-1];
+                    var subArray = s.Split(new Char[] { ':' });
+                    var token = subArray[subArray.Length - 1];
+                    return token.Replace('"',' ');
                 }
             }
-            //array.GetValue()
 
             return "";
         }
@@ -99,9 +107,17 @@ namespace WarCallApiClient
         private void byId_Click(object sender, EventArgs e)
         {
             int id = 1;
-            var http = "Https://api.instech.no/WarCall/Insurance/ById/"+id.ToString();
+           // var http = "Https://api.instech.no/WarCall/Insurance/ById/"+id.ToString();
+            var http = "http://localhost:4504/WarCall/Insurance/ById/" + id.ToString();
+            var token = GetJwt();      
 
             var request = (HttpWebRequest)WebRequest.Create(http);
+
+            if (token != "")
+            {
+                token = "Bearer " + token;
+                request.Headers.Add("Authorization", token);
+            }
             var response = request.GetResponse();
 
             var responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
