@@ -122,5 +122,22 @@ namespace WarCallApiClient
 
             var responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
         }
+
+        private void btnGetFailed_Click(object sender, EventArgs e)
+        {
+            var http = "http://localhost:4504/WarCall/Insurance/GetFailedImports";
+            var token = GetJwt();
+            var request = (HttpWebRequest)WebRequest.Create(http);
+
+            if (token != "")
+            {
+                token = "Bearer " + token;
+                request.Headers.Add("Authorization", token);
+            }
+            var response = request.GetResponse();
+
+            var responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
+
+        }
     }
 }
