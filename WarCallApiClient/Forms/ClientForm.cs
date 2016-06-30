@@ -1,16 +1,34 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Net;
 using System.Text;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 using WarCallApiClient.Models;
 
 namespace WarCallApiClient
 {
     public partial class ClientForm : Form
     {
+        private string _jwt = "";
+        private DateTime _validTo = DateTime.Now;
+        private string Jwt
+        {
+            get
+            {
+                if (_jwt.Length > 0 && _validTo > DateTime.Now.AddSeconds(30))
+                {
+                    return _jwt;
+                }
+
+                _jwt = GetJwt();
+                _validTo = new JwtSecurityToken(_jwt).ValidTo;
+                return _jwt;
+            }
+        }
+
         public ClientForm()
         {
             InitializeComponent();
@@ -23,7 +41,7 @@ namespace WarCallApiClient
             var insurance = Insurance.GetTestInsurance();
             var content = JsonConvert.SerializeObject(insurance);
             var data = Encoding.UTF8.GetBytes(content);
-            var token = GetJwt();
+            var token = Jwt;
 
             var response = RunPost(http, content, token);
 
@@ -33,7 +51,7 @@ namespace WarCallApiClient
         {
             var data = Encoding.UTF8.GetBytes(body);
             var request = (HttpWebRequest)WebRequest.Create(http);
-            //request.
+            
             request.Method = "POST";
             request.ContentType = "application/json";
             request.ContentLength = data.Length;
@@ -44,17 +62,21 @@ namespace WarCallApiClient
                 request.Headers.Add("Authorization", token);
             }
 
+            //request.GetRequestStream().Write(data, 0, data.Length);
             using (var stream = request.GetRequestStream())
             {
                 stream.Write(data, 0, data.Length);
+                stream.Close();
             }
 
             try
             {
-                var response = request.GetResponse();
-
-                var responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
-                return responseString;
+                using (var streamreader = new StreamReader(request.GetResponse().GetResponseStream()))
+                {
+                    var responseString = streamreader.ReadToEnd();
+                    streamreader.Close();
+                    return responseString;
+                }
             }
             catch (Exception e)
             {
@@ -86,7 +108,7 @@ namespace WarCallApiClient
                 {
                     var subArray = s.Split(new Char[] { ':' });
                     var token = subArray[subArray.Length - 1];
-                    return token.Replace('"',' ');
+                    return token.Replace('"',' ').Trim();
                 }
             }
 
