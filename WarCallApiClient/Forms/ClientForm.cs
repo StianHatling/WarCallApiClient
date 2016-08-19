@@ -25,16 +25,16 @@ namespace WarCallApiClient
             var data = Encoding.UTF8.GetBytes(content);
             var token = GetJwt();
 
-            var response = RunPost(http, content, token);
+            var response = RunPost(http, content, token, "POST");
 
         }
 
-        private string RunPost(string http, string body, string token)
+        private string RunPost(string http, string body, string token, string method)
         {
             var data = Encoding.UTF8.GetBytes(body);
             var request = (HttpWebRequest)WebRequest.Create(http);
-            //request.
-            request.Method = "POST";
+
+            request.Method = method;
             request.ContentType = "application/json";
             request.ContentLength = data.Length;
 
@@ -77,7 +77,7 @@ namespace WarCallApiClient
 
             string body = GetJwtBody(clientId, grantType, refreshtoken, scope, apiType);
 
-            var response = RunPost(http, body, "");
+            var response = RunPost(http, body, "", "POST");
             var array = response.Split(new Char[] { '{', ',', '}' });
 
             foreach (var s in array)
@@ -138,6 +138,31 @@ namespace WarCallApiClient
 
             var responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
 
+        }
+
+        private void btnInsertVisit_Click(object sender, EventArgs e)
+        {
+            var http = "http://localhost:4504/Visit/AddVisit";
+            var visit = Visit.GetSampleVisit();
+            var content = JsonConvert.SerializeObject(visit);
+            var data = Encoding.UTF8.GetBytes(content);
+            var token = GetJwt();
+
+            var response = RunPost(http, content, token, "POST");
+
+        }
+
+        private void btnUpdateVisit_Click(object sender, EventArgs e)
+        {
+            var http = "http://localhost:4504/Visit/UpdateVisit";
+            var visit = Visit.GetSampleVisit();
+            visit.ClaimNumber = 666;
+
+            var content = JsonConvert.SerializeObject(visit);
+            var data = Encoding.UTF8.GetBytes(content);
+            var token = GetJwt();
+
+            var response = RunPost(http, content, token, "PUT");
         }
     }
 }

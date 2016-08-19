@@ -60,6 +60,8 @@
     <Compile Include="Models\Insurance.cs" />
     <Compile Include="Models\InsuranceHandler.cs" />
     <Compile Include="Models\InterestCode.cs" />
+    <Compile Include="Models\Location.cs" />
+    <Compile Include="Models\Visit.cs" />
     <Compile Include="Models\WebAccount.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
